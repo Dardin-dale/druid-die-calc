@@ -12,7 +12,7 @@ pub struct CalcState {
     operand: String, //current operand
     operator: char,
     in_num: bool,
-    ind_die: bool, //ensure only 1 'd' per die
+    in_die: bool, //ensure only 1 'd' per die
 }
 
 impl CalcState {
@@ -40,6 +40,7 @@ impl CalcState {
                 }
                 self.operator = op;
                 self.in_num = false;
+                self.in_die = false;
                 self.command.push(op);
             }
             'c' => {
@@ -48,8 +49,19 @@ impl CalcState {
             'C' => {
                 self.command.clear();
             }
-            'd' => {}
-            '⌫' => {}
+            'd' => {
+                self.in_die = true;
+            }
+            '⌫' => {
+                if self.in_num {
+                    self.value.pop();
+                    if self.value.is_empty() || self.value == "−" {
+                        self.value = "0".to_string();
+                        self.in_num = false;
+                        self.in_die = false;
+                    }
+                }
+            }
             _ => unreachable!(),
         }
     }
